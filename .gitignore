@@ -1,0 +1,12 @@
+.env
+.venv
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.chroma/
+.chroma_eval/
+*.log
+.DS_Store
+.dev/
