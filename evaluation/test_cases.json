@@ -1,0 +1,37 @@
+[
+    {
+      "question": "What is the Net Interest Income of JPMorgan Chase & Co. in 3Q25?",
+      "expected_answers": ["24.1 billion", "$24.1 billion", "24.1b", "$24.1b"],
+      "expected_docs": ["chase-report.pdf"],
+      "keywords": ["24.1", "billion"],
+      "regex_any_of": ["\\$?24\\.1\\s*(b|billion)"]
+    },
+    {
+      "question": "What is the Q4 FY25 revenue of NVDA?",
+      "expected_answers": ["39,331 million", "39331 million", "39.331 billion", "$39.331 billion", "39.331b", "$39,331 million"],
+      "expected_docs": ["NVDA-Q4FY25-CFO-Commentary.pdf"],
+      "keywords": ["39,331", "39.331", "million", "billion"],
+      "regex_any_of": ["\\$?39[,\\.]?331\\s*(million|m|billion|b)"]
+    },
+    {
+      "question": "Which has higher revenue of NVDA, Q4 FY25 or Q3 FY25?",
+      "expected_answers": ["Q4 FY25", "Q4", "fourth quarter", "q4 fy25"],
+      "expected_docs": ["NVDA-Q4FY25-CFO-Commentary.pdf"],
+      "keywords": ["Q4", "higher", "fourth"],
+      "regex_any_of": ["[Qq]4(\\s+FY25)?"]
+    },
+    {
+      "question": "What is the 3Q25 net income of JPMorgan Chase?",
+      "expected_answers": ["14.4 billion", "$14.4 billion", "14.4b", "$14.4b"],
+      "expected_docs": ["chase-report.pdf"],
+      "keywords": ["14.4", "billion"],
+      "regex_any_of": ["\\$?14\\.4\\s*(b|billion)"]
+    },
+    {
+      "question": "What is the Total Loss-Absorbing Capacity of JPMorgan Chase in 3Q25?",
+      "expected_answers": ["568 billion", "$568 billion", "568b", "$568b"],
+      "expected_docs": ["chase-report.pdf"],
+      "keywords": ["568", "billion"],
+      "regex_any_of": ["\\$?568\\s*(b|billion)"]
+    }
+  ]
