@@ -10,3 +10,6 @@ __pycache__/
 *.log
 .DS_Store
 .dev/
+htmlcov/
+coverage.xml
+.coverage

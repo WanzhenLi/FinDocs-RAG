@@ -43,6 +43,29 @@ The app includes a lightweight evaluation harness and a small finance dataset:
 How to run:
 - Open the app and click Run Evaluation in the sidebar. The app will lazily build a dedicated eval index (separate from your session’s index), run the test set, and render summary and per-case details.
 
+## Testing
+
+This repository is thoroughly tested with both unit and integration tests that cover the full RAG pipeline. Running `./scripts/run_tests.sh` will execute the entire test suite and generate a `coverage.xml` report, demonstrating the current level of test coverage (98.03% line coverage and 96.43% branch coverage as of the latest run).
+
+1. Create/activate the virtualenv and install test dependencies:
+   ```bash
+   python -m venv .venv
+   . .venv/bin/activate
+   pip install -r requirements-dev.txt
+   ```
+2. Run the full unit + integration suite (fastest loop):
+   ```bash
+   pytest
+   ```
+3. Generate statement & branch coverage plus HTML/XML artefacts:
+   ```bash
+   ./scripts/run_tests.sh
+   ```
+   The script wipes old data (`coverage erase`), runs `coverage run -m pytest`, and writes:
+   - `coverage.xml` (machine-readable summary for CI/badges)
+   - `htmlcov/index.html` (viewable coverage per file; because `.coveragerc` sets `skip_covered = True`, the HTML report only shows files that are not yet 100%)
+   - Console summary via `coverage report -m`
+
 
 ## Setup
 

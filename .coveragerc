@@ -1,0 +1,22 @@
+[run]
+branch = True
+source =
+    chains
+    document_loader
+    document_processor
+    evaluation
+    rag_workflow
+    state
+    utils
+    config
+omit =
+    */__init__.py
+    tests/*
+    .venv/*
+    app.py
+    ui_components.py
+
+[report]
+show_missing = True
+skip_covered = False
+sort = Cover
