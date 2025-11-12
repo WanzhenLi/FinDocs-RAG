@@ -154,7 +154,9 @@ def test_create_document_chunks_respects_actual_size_limits():
     paragraph = "This is a financial document containing important quarterly earnings data and market analysis.\n\n"
     long_text = paragraph * 300
     documents = [Document(page_content=long_text, metadata={"original_filename": "long_doc.pdf"})]
+    
     chunks = processor._create_document_chunks(documents)
+
     assert len(chunks) > 1, f"Long text should be split into multiple chunks, but got only {len(chunks)} chunk(s)"
     total_chunks = len(chunks)
     for i, chunk in enumerate(chunks):

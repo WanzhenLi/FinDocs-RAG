@@ -24,8 +24,7 @@ from chains.document_relevance import document_relevance
 from chains.evaluate import evaluate_docs
 from chains.generate_answer import generate_chain
 from chains.question_relevance import question_relevance
-from config import TAVILY_SEARCH_RESULTS
-
+from config import TAVILY_SEARCH_RESULTS, ENABLE_ONLINE_SEARCH
 
 class RAGWorkflow:
     """
@@ -128,7 +127,7 @@ class RAGWorkflow:
                 "Answers Question": END,
             },
         )
-        # Keep Search Online node for graph structure, but it won't be reached
+        # Connect Search Online to Generate Answer (when ENABLE_ONLINE_SEARCH is True)
         workflow.add_edge("Search Online", "Generate Answer")
 
         return workflow.compile()
@@ -262,11 +261,16 @@ class RAGWorkflow:
         }
     
     def _any_doc_irrelevant(self, state):
-        """Determine whether any document is irrelevant - Always generate answer based on available documents"""
+        """Determine routing based on document relevance and ENABLE_ONLINE_SEARCH config"""
         online_search = state.get("online_search", False)
-        # Disable online search - always generate answer based on available documents
-        next_state = "Generate Answer"
-        print(f"ROUTING DECISION: Going to '{next_state}' (online_search disabled, documents available: {len(state.get('documents', []))})")
+
+        if ENABLE_ONLINE_SEARCH and online_search:
+            next_state = "Search Online"
+            print(f"ROUTING DECISION: Going to 'Search Online' (documents insufficient)")
+        else:
+            next_state = "Generate Answer"
+            print(f"ROUTING DECISION: Going to 'Generate Answer' (online search disabled or documents sufficient)")
+    
         return next_state
     
     def _check_hallucinations(self, state: GraphState):

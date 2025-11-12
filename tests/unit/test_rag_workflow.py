@@ -2,6 +2,7 @@ from types import SimpleNamespace
 
 from langchain_core.documents import Document
 
+import config as config_module
 import rag_workflow as rag_module
 from rag_workflow import RAGWorkflow
 
@@ -178,3 +179,47 @@ def test_check_hallucinations_skips_question_eval_when_not_grounded(monkeypatch)
     assert route == "Answers Question"
     assert "question_relevance_score" not in state
     assert fake_q.called is False
+
+
+def test_any_doc_irrelevant_routes_to_online_when_enabled_and_needed(monkeypatch):
+    """Test routing to 'Search Online' when ENABLE_ONLINE_SEARCH=True and documents are insufficient"""
+    workflow, _ = _setup_workflow(monkeypatch)
+    monkeypatch.setattr(rag_module, "ENABLE_ONLINE_SEARCH", True)
+    
+    state = {"question": "Q", "documents": [], "online_search": True}
+    route = workflow._any_doc_irrelevant(state)
+    
+    assert route == "Search Online"
+
+
+def test_any_doc_irrelevant_routes_to_generate_when_disabled(monkeypatch):
+    """Test routing to 'Generate Answer' when ENABLE_ONLINE_SEARCH=False regardless of online_search flag"""
+    workflow, _ = _setup_workflow(monkeypatch)
+    monkeypatch.setattr(rag_module, "ENABLE_ONLINE_SEARCH", False)
+    
+    state = {"question": "Q", "documents": [], "online_search": True}
+    route = workflow._any_doc_irrelevant(state)
+    
+    assert route == "Generate Answer"
+
+
+def test_any_doc_irrelevant_routes_to_generate_when_docs_sufficient(monkeypatch):
+    """Test routing to 'Generate Answer' when documents are sufficient (online_search=False)"""
+    workflow, _ = _setup_workflow(monkeypatch)
+    monkeypatch.setattr(rag_module, "ENABLE_ONLINE_SEARCH", True)
+    
+    state = {"question": "Q", "documents": ["doc1"], "online_search": False}
+    route = workflow._any_doc_irrelevant(state)
+    
+    assert route == "Generate Answer"
+
+
+def test_any_doc_irrelevant_default_behavior_when_flag_missing(monkeypatch):
+    """Test routing uses default online_search=False when flag is not in state"""
+    workflow, _ = _setup_workflow(monkeypatch)
+    monkeypatch.setattr(rag_module, "ENABLE_ONLINE_SEARCH", True)
+    
+    state = {"question": "Q", "documents": ["doc1"]}  # No online_search flag
+    route = workflow._any_doc_irrelevant(state)
+    
+    assert route == "Generate Answer"

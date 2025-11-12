@@ -16,12 +16,45 @@ Retrieval-augmented Q&A for financial documents, built with Streamlit, LangGraph
 
 High-level flow orchestrated by LangGraph:
 
-1) Retrieve Documents → 2) Grade Documents → 3) Generate Answer → 4) Check Hallucinations → END
+1) Retrieve Documents → 2) Evaluate Documents → 3) Generate Answer → 4) Check Hallucinations → END
 
 - Retrieval: Uses a session-scoped Chroma collection with OpenAI embeddings
 - Grading: Filters to relevant chunks before generation
 - Generation: Produces answers with [n] citations that map to the retrieved chunks
 - Checks: Performs document- and question-relevance checks as reference signals
+
+### LangGraph StateGraph Structure
+
+The RAG workflow is implemented as a LangGraph state machine with conditional routing:
+
+```mermaid
+graph TD
+    Start([Entry Point]) --> Retrieve[Retrieve Documents<br/>_retrieve]
+    Retrieve --> Grade[Evaluate Documents<br/>_evaluate]
+    Grade --> Decision{_any_doc_irrelevant<br/>routing decision}
+    
+    Decision -->|online_search=False<br/>default path| Generate[Generate Answer<br/>_generate_answer]
+    Decision -->|online_search=True<br/>currently disabled| Search[Search Online<br/>_search_online]
+    
+    Search --> Generate
+    
+    Generate --> Check{_check_hallucinations<br/>quality checks}
+    
+    Check -->|Answers Question| End([END])    
+```
+
+**Node Functions:**
+- **Retrieve Documents**: Vector similarity search against Chroma DB to find relevant document chunks
+- **Evaluate Documents**: LLM-based evaluation of each retrieved document's relevance to the query
+- **Generate Answer**: Creates a comprehensive answer with inline `[n]` citations referencing specific chunks
+- **Search Online**: Tavily web search fallback (currently disabled in config, node kept for extensibility)
+- **Check Hallucinations**: Two-layer validation ensuring answer is grounded in documents and addresses the question
+
+**Routing Logic:**
+- `_any_doc_irrelevant`: Currently hardcoded to always route to "Generate Answer" (online search disabled)
+- `_check_hallucinations`: Validates answer quality through document relevance and question relevance checks
+
+**Note:** The "Search Online" node (shown with dashed border) is part of the graph structure but not executed in the current configuration (`ENABLE_ONLINE_SEARCH = False`).
 
 
 ## Features
